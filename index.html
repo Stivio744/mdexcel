@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solde Fournisseur Mensuel - Filtre Excel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .app-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .right-panel {
+            flex: 2;
+            min-width: 500px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #3498db;
+        }
+        
+        .file-upload {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            background-color: #e8f4fc;
+        }
+        
+        .file-upload i {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .file-upload p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        #file-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 10px;
+        }
+        
+        .filters {
+            margin-bottom: 25px;
+        }
+        
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .filter-group input:focus, .filter-group select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #219653;
+        }
+        
+        .btn-secondary {
+            background-color: #7f8c8d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #6c7b7d;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th:last-child {
+            border-right: none;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        td {
+            padding: 12px;
+            color: #333;
+        }
+        
+        .supplier-cell {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .amount-cell {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .summary {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .summary-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .summary-item {
+            flex: 1;
+            min-width: 200px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-item h4 {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-item p {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .total-amount {
+            color: #27ae60 !important;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+        
+        .highlight {
+            background-color: #fffacd !important;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .sheet-selector {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sheet-selector select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                min-width: 100%;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
+            header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="app-icon">
+                <i class="fas fa-file-excel"></i>
+            </div>
+            <h1>Solde Fournisseur Mensuel</h1>
+            <p>Importez votre fichier Excel, filtrez par fournisseur et montant, et exportez les résultats. Les montants sont automatiquement regroupés par fournisseur.</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <h2 class="section-title"><i class="fas fa-cog"></i> Configuration</h2>
+                
+                <div class="file-upload" id="drop-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Cliquez ou glissez-déposez votre fichier Excel ici</p>
+                    <p>Formats supportés: .xlsx, .xls</p>
+                    <div id="file-name">Aucun fichier sélectionné</div>
+                    <input type="file" id="file-input" accept=".xlsx,.xls" style="display: none;">
+                </div>
+                
+                <div class="filters">
+                    <h2 class="section-title"><i class="fas fa-filter"></i> Filtres</h2>
+                    
+                    <div class="filter-group">
+                        <label for="supplier-filter"><i class="fas fa-user-tie"></i> Fournisseur</label>
+                        <input type="text" id="supplier-filter" placeholder="Rechercher un fournisseur...">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="amount-filter"><i class="fas fa-dollar-sign"></i> Montant minimum</label>
+                        <input type="number" id="amount-filter" placeholder="Montant minimum (optionnel)">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="sort-by"><i class="fas fa-sort-amount-down"></i> Trier par</label>
+                        <select id="sort-by">
+                            <option value="name">Nom de fournisseur (A-Z)</option>
+                            <option value="name-desc">Nom de fournisseur (Z-A)</option>
+                            <option value="amount">Montant (croissant)</option>
+                            <option value="amount-desc">Montant (décroissant)</option>
+                        </select>
+                    </div>
+
+                    <div class="sheet-selector" id="sheet-selector-container" style="display: none;">
+                        <label for="sheet-select"><i class="fas fa-sheet"></i> Sélectionner une feuille:</label>
+                        <select id="sheet-select">
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" id="apply-filter">
+                        <i class="fas fa-filter"></i> Appliquer les filtres
+                    </button>
+                    <button class="btn btn-success" id="export-excel">
+                        <i class="fas fa-file-export"></i> Exporter vers Excel
+                    </button>
+                    <button class="btn btn-secondary" id="reset-all">
+                        <i class="fas fa-redo"></i> Réinitialiser
+                    </button>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <h2 class="section-title"><i class="fas fa-table"></i> Données filtrées</h2>
+                
+                <div class="table-container">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fournisseur</th>
+                                <th>Nombre d'occurrences</th>
+                                <th>Montant total</th>
+                                <th>Montant moyen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <tr>
+                                <td colspan="4" class="no-data">Importez un fichier Excel pour commencer</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="summary">
+                    <h3><i class="fas fa-chart-bar"></i> Résumé</h3>
+                    <div class="summary-info">
+                        <div class="summary-item">
+                            <h4>Fournisseurs uniques</h4>
+                            <p id="unique-suppliers">0</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Total des transactions</h4>
+                            <p id="total-transactions">0</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Montant total</h4>
+                            <p id="total-amount" class="total-amount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Facilite de gestion des soldes fournisseurs mensuels | Développé Par Mr RATIARSON Chilance</p>
+        </div>
+    </div>
+
+    <!-- Bibliothèques externes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <script>
+        // Variables globales
+        let workbook = null;
+        let originalData = [];
+        let filteredData = [];
+        let groupedData = [];
+        let currentSheet = 0;
+        
+        // Références aux éléments DOM
+        const fileInput = document.getElementById('file-input');
+        const dropArea = document.getElementById('drop-area');
+        const fileNameDisplay = document.getElementById('file-name');
+        const supplierFilter = document.getElementById('supplier-filter');
+        const amountFilter = document.getElementById('amount-filter');
+        const sortBy = document.getElementById('sort-by');
+        const applyFilterBtn = document.getElementById('apply-filter');
+        const exportExcelBtn = document.getElementById('export-excel');
+        const resetAllBtn = document.getElementById('reset-all');
+        const tableBody = document.getElementById('table-body');
+        const uniqueSuppliersEl = document.getElementById('unique-suppliers');
+        const totalTransactionsEl = document.getElementById('total-transactions');
+        const totalAmountEl = document.getElementById('total-amount');
+        const sheetSelectorContainer = document.getElementById('sheet-selector-container');
+        const sheetSelect = document.getElementById('sheet-select');
+        
+        // Événements de glisser-déposer
+        dropArea.addEventListener('click', () => fileInput.click());
+        
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.style.backgroundColor = '#e8f4fc';
+        });
+        
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.style.backgroundColor = '';
+        });
+        
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.style.backgroundColor = '';
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileUpload(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // Événement de sélection de fichier
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        // Événement de changement de feuille
+        sheetSelect.addEventListener('change', (e) => {
+            if (workbook) {
+                currentSheet = parseInt(e.target.value);
+                loadSheetData(currentSheet);
+            }
+        });
+        
+        // Fonction pour gérer l'upload de fichier
+        function handleFileUpload(file) {
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                alert('Veuillez sélectionner un fichier Excel (.xlsx ou .xls)');
+                return;
+            }
+            
+            fileNameDisplay.textContent = file.name;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // Mettre à jour le sélecteur de feuilles
+                    updateSheetSelector();
+                    
+                    // Charger la première feuille
+                    if (workbook.SheetNames.length > 0) {
+                        currentSheet = 0;
+                        loadSheetData(0);
+                    }
+                    
+                } catch (error) {
+                    console.error('Erreur lors de la lecture du fichier Excel:', error);
+                    alert('Erreur lors de la lecture du fichier Excel. Veuillez vérifier le format.');
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Fonction pour mettre à jour le sélecteur de feuilles
+        function updateSheetSelector() {
+            if (workbook && workbook.SheetNames.length > 1) {
+                sheetSelectorContainer.style.display = 'block';
+                sheetSelect.innerHTML = '';
+                
+                workbook.SheetNames.forEach((name, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = name;
+                    sheetSelect.appendChild(option);
+                });
+            } else {
+                sheetSelectorContainer.style.display = 'none';
+            }
+        }
+        
+        // Fonction pour charger les données d'une feuille
+        function loadSheetData(sheetIndex) {
+            const sheetName = workbook.SheetNames[sheetIndex];
+            const worksheet = workbook.Sheets[sheetName];
+            
+            // Convertir en JSON avec en-têtes
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+            
+            // Traiter les données
+            processExcelData(jsonData);
+        }
+        
+        // Fonction pour traiter les données Excel
+        function processExcelData(data) {
+            originalData = [];
+            
+            // Détecter les colonnes automatiquement
+            let supplierCol = -1;
+            let amountCol = -1;
+            
+            // Parcourir les premières lignes pour détecter les colonnes
+            for (let i = 0; i < Math.min(5, data.length); i++) {
+                const row = data[i];
+                if (!row) continue;
+                
+                for (let j = 0; j < row.length; j++) {
+                    const cellValue = String(row[j] || '').toUpperCase().trim();
+                    if (cellValue === 'ELEMENT' || cellValue === 'FOURNISSEUR' || cellValue === 'SUPPLIER') {
+                        supplierCol = j;
+                    } else if (cellValue === 'MONTANT' || cellValue === 'AMOUNT' || cellValue === 'TOTAL') {
+                        amountCol = j;
+                    }
+                }
+            }
+            
+            // Si on n'a pas trouvé, utiliser les indices par défaut (colonne 1 pour fournisseur, 2 pour montant)
+            if (supplierCol === -1) supplierCol = 1;
+            if (amountCol === -1) amountCol = 2;
+            
+            // Parcourir toutes les lignes
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                
+                // Vérifier si la ligne a au moins le nombre de colonnes nécessaire
+                if (row && row.length > Math.max(supplierCol, amountCol)) {
+                    const supplier = row[supplierCol] ? row[supplierCol].toString().trim() : '';
+                    const amount = row[amountCol];
+                    
+                    // Ignorer les lignes vides et les en-têtes
+                    if (supplier && supplier !== '' && 
+                        !supplier.toUpperCase().includes('ELEMENT') && 
+                        !supplier.toUpperCase().includes('FOURNISSEUR') &&
+                        amount !== undefined && amount !== '' && 
+                        !String(amount).toUpperCase().includes('MONTANT')) {
+                        
+                        // Convertir le montant en nombre
+                        let numericAmount = parseFloat(String(amount).replace(/,/g, '').replace(/\s/g, ''));
+                        
+                        if (!isNaN(numericAmount) && numericAmount > 0) {
+                            originalData.push({
+                                supplier: supplier,
+                                amount: numericAmount
+                            });
+                        }
+                    }
+                }
+            }
+            
+            console.log(`Données chargées: ${originalData.length} lignes`);
+            
+            if (originalData.length === 0) {
+                alert('Aucune donnée valide trouvée dans le fichier. Veuillez vérifier le format.');
+            } else {
+                // Appliquer les filtres
+                applyFilters();
+            }
+        }
+        
+        // Fonction pour regrouper les données par fournisseur
+        function groupDataBySupplier(data) {
+            const grouped = {};
+            
+            data.forEach(item => {
+                if (!grouped[item.supplier]) {
+                    grouped[item.supplier] = {
+                        supplier: item.supplier,
+                        count: 0,
+                        total: 0,
+                        average: 0
+                    };
+                }
+                
+                grouped[item.supplier].count++;
+                grouped[item.supplier].total += item.amount;
+            });
+            
+            // Calculer la moyenne pour chaque fournisseur
+            Object.values(grouped).forEach(group => {
+                group.average = group.total / group.count;
+            });
+            
+            return Object.values(grouped);
+        }
+        
+        // Fonction pour appliquer les filtres
+        function applyFilters() {
+            if (originalData.length === 0) {
+                return;
+            }
+            
+            let data = [...originalData];
+            
+            // Filtrer par nom de fournisseur
+            const supplierFilterValue = supplierFilter.value.toLowerCase().trim();
+            if (supplierFilterValue) {
+                data = data.filter(item => 
+                    item.supplier.toLowerCase().includes(supplierFilterValue)
+                );
+            }
+            
+            // Filtrer par montant minimum
+            const amountFilterValue = parseFloat(amountFilter.value);
+            if (!isNaN(amountFilterValue) && amountFilterValue > 0) {
+                data = data.filter(item => item.amount >= amountFilterValue);
+            }
+            
+            filteredData = data;
+            
+            // Grouper les données par fournisseur
+            groupedData = groupDataBySupplier(filteredData);
+            
+            // Trier les données groupées
+            sortGroupedData();
+            
+            // Mettre à jour l'affichage
+            updateTable();
+            updateSummary();
+        }
+        
+        // Fonction pour trier les données groupées
+        function sortGroupedData() {
+            const sortValue = sortBy.value;
+            
+            switch(sortValue) {
+                case 'name':
+                    groupedData.sort((a, b) => a.supplier.localeCompare(b.supplier));
+                    break;
+                case 'name-desc':
+                    groupedData.sort((a, b) => b.supplier.localeCompare(a.supplier));
+                    break;
+                case 'amount':
+                    groupedData.sort((a, b) => a.total - b.total);
+                    break;
+                case 'amount-desc':
+                    groupedData.sort((a, b) => b.total - a.total);
+                    break;
+            }
+        }
+        
+        // Fonction pour mettre à jour le tableau
+        function updateTable() {
+            tableBody.innerHTML = '';
+            
+            if (groupedData.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="no-data">Aucune donnée ne correspond aux filtres</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            groupedData.forEach((item) => {
+                const row = document.createElement('tr');
+                
+                // Mettre en surbrillance les lignes avec des montants élevés (> 100 000 000)
+                const isHighlighted = item.total > 100000000;
+                
+                if (isHighlighted) {
+                    row.classList.add('highlight');
+                }
+                
+                row.innerHTML = `
+                    <td class="supplier-cell">${item.supplier}</td>
+                    <td>${item.count}</td>
+                    <td class="amount-cell">${formatCurrency(item.total)}</td>
+                    <td class="amount-cell">${formatCurrency(item.average)}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Fonction pour mettre à jour le résumé
+        function updateSummary() {
+            const uniqueSuppliers = groupedData.length;
+            const totalTransactions = filteredData.length;
+            const totalAmount = groupedData.reduce((sum, item) => sum + item.total, 0);
+            
+            uniqueSuppliersEl.textContent = uniqueSuppliers;
+            totalTransactionsEl.textContent = totalTransactions;
+            totalAmountEl.textContent = formatCurrency(totalAmount);
+        }
+        
+        // Fonction pour formater les montants en devise (Ariary)
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'MGA',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount).replace('MGA', 'Ar');
+        }
+        
+        // Fonction pour exporter vers Excel
+        function exportToExcel() {
+            if (groupedData.length === 0) {
+                alert("Aucune donnée à exporter. Veuillez d'abord importer un fichier Excel.");
+                return;
+            }
+            
+            // Préparer les données pour l'exportation
+            const exportData = [
+                ["Fournisseur", "Nombre d'occurrences", "Montant total (Ar)", "Montant moyen (Ar)"]
+            ];
+            
+            groupedData.forEach(item => {
+                exportData.push([
+                    item.supplier,
+                    item.count,
+                    item.total,
+                    item.average
+                ]);
+            });
+            
+            // Ajouter une ligne de total
+            const totalAmount = groupedData.reduce((sum, item) => sum + item.total, 0);
+            const totalTransactions = filteredData.length;
+            
+            exportData.push([]);
+            exportData.push(["TOTAL GÉNÉRAL", totalTransactions, totalAmount, totalTransactions > 0 ? totalAmount / totalTransactions : 0]);
+            
+            // Créer une feuille de calcul
+            const worksheet = XLSX.utils.aoa_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Solde Fournisseurs");
+            
+            // Générer le fichier Excel
+            const fileName = `solde_fournisseurs_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
+        }
+        
+        // Fonction pour réinitialiser tout
+        function resetAll() {
+            fileInput.value = '';
+            fileNameDisplay.textContent = 'Aucun fichier sélectionné';
+            supplierFilter.value = '';
+            amountFilter.value = '';
+            sortBy.value = 'name';
+            workbook = null;
+            originalData = [];
+            filteredData = [];
+            groupedData = [];
+            sheetSelectorContainer.style.display = 'none';
+            
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="no-data">Importez un fichier Excel pour commencer</td>
+                </tr>
+            `;
+            
+            updateSummary();
+        }
+        
+        // Événements des boutons
+        applyFilterBtn.addEventListener('click', applyFilters);
+        exportExcelBtn.addEventListener('click', exportToExcel);
+        resetAllBtn.addEventListener('click', resetAll);
+        
+        // Événements pour appliquer les filtres automatiquement
+        supplierFilter.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') applyFilters();
+        });
+        
+        amountFilter.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') applyFilters();
+        });
+        
+        sortBy.addEventListener('change', applyFilters);
+    </script>
+</body>
+</html>
